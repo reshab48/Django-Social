@@ -1,0 +1,36 @@
+{% load thumbnail %}
+{% for image in images %}
+<div class="container" id="user-detail">
+	<div class="row">
+		<div class="col-xs-5">
+			<div class="thumbnail">
+				{% thumbnail image.image_file "300x300" crop="100%" as im %}
+				<a href="{{ image.get_absolute_url }}">
+					<img src="{{ im.url }}" class="img-thumbnail">
+				</a>
+				{% endthumbnail %}
+				<div class="caption-text text-primary text-capitalize text-center">
+					<a href="{{ image.get_absolute_url }}" class="title">
+						{{ image.title }}
+					</a>
+					{% with total_likes=image.users_like.count users_like=image.users_like.all %}
+					<span class="count text-primary pull-right">
+						<span class="total">{{total_likes}}</span>
+						like{{total_likes|pluralize}}
+					</span>
+					{% endwith %}
+				</div>
+			</div>
+			{% if image.user == request.user %}
+				<a href="{{ image.get_absolute_url2 }}" class="btn btn-primary">Edit Image</a>
+			{% endif %}
+		</div>
+		<div class="col-xs-2">
+			
+		</div>
+		<div class="col-xs-3">
+			
+		</div>
+	</div>
+</div>
+{% endfor %}

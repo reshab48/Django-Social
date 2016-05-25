@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% block title %}Bookmark an image{% endblock %}
+
+{% block content %}
+<div class="container">
+	<h1 class="text-danger">Bookmark an Image</h1>
+	<hr/>
+	<div class="jumbotron">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-xs-1">
+					
+				</div>
+				<div class="col-xs-4">
+					<div class="well">
+						<form action="." method="post" enctype="multipart/form-data">
+							{% bootstrap_form form layout="inline" %}
+							{% csrf_token %}
+							<input type="submit" value="Upload" class="btn btn-primary">
+						</form>	
+					</div>
+				</div>
+				<div class="col-xs-2">
+					<img id="image_upload_preview" src="http://placehold.it/100x100" alt="your image">
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

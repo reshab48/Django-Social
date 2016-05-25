@@ -1,0 +1,62 @@
+{% load thumbnail %}
+{% with user=action.user profile=action.user.profile %}
+<div class="container-fluid" id="detail-actions">
+	<div class="row">
+		<div class="col-xs-4">
+			<div class="well">
+				{% if profile.photo %}
+				{% thumbnail user.profile.photo "80x80" crop="100%" as im %}
+				<a href="{{ user.get_absolute_url }}">
+					<img src="{{ im.url }}" alt="{{ user.get_full_name }}" class="img-thumbnail">
+				</a>
+				{% endthumbnail %}
+				{% endif %}
+				{% if action.target %}
+				{% with target=action.target %}
+				{% if target.image_file %}
+				{% load thumbnail %}
+				{% thumbnail target.image_file "80x80" crop="100%" as im %}
+				<a href="{{ target.get_absolute_url }}">
+					<img src="{{ im.url }}" class="img-thumbnail">
+				</a>
+				{% endthumbnail %}
+				{% endif %}
+				{% if target.profile.photo %}
+				{% load thumbnail %}
+				{% thumbnail target.profile.photo "80x80" crop="100%" as im %}
+				<a href="{{ target.profile.photo.url }}">
+					<img src="{{ im.url }}" class="img-thumbnail">
+				</a>
+				{% endthumbnail %}
+				{% endif %}
+				{% endwith %}
+				{% endif %}
+				<div class="text-left">
+					<p class="text-danger text-capitalize">
+					<br/>
+						<span class="text-muted">{{ action.created|timesince }} ago</span>
+						<br />
+						<a href="{{ user.get_absolute_url }}">
+							{{ user.get_full_name }}
+						</a>
+						{{ action.verb }}
+						{% if action.target %}
+						{% with target=action.target %}
+						<a href="{{ target.get_absolute_url }}">{{ target }}</a>
+						{% endwith %}
+						{% endif %}
+					</p>
+				</div>
+			</div>
+		</div>
+		<div class="col-xs-1">
+
+		</div>
+		<div class="col-xs-4">
+<!-- 			<div class="well">
+					
+			</div> -->
+		</div>
+	</div>
+</div>
+{% endwith %}

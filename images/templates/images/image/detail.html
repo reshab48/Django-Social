@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %} {{ image.title }} {% endblock %}
+
+{% block content %}
+<div class="container">
+	<h1 class="text-danger text-capitalize">{{ image.title }}</h1>
+	<hr/>
+	<div class="jumbotron">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-xs-1">
+					
+				</div>
+				<div class="col-xs-4">
+					{% load thumbnail %}
+					{% thumbnail image.image_file "300x300" as im %}
+					<div class="img-thumbnail">
+						<a href="{{image.image_file.url}}">
+							<img src="{{ im.url }}" class="img-thumbnail">
+						</a>
+						<div class="caption-text text-danger text-capitalize">
+							<p class="pull-left">Uploaded by: <a href="{{ image.user.get_absolute_url }}">{{ image.user.get_full_name }}</a></p>
+						</div>
+					</div>
+					{% endthumbnail %}
+					<span class="count-views text-danger">
+						<span class="total-views">{{ total_views }}</span>
+						view{{ total_views|pluralize }}
+					</span>
+					{% with total_likes=image.users_like.count users_like=image.users_like.all %}
+					<span class="count text-primary">
+						<span class="total">{{total_likes}}</span>
+						like{{total_likes|pluralize}}
+					</span>
+					<a href="#" data-id="{{ image.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like_button btn btn-primary fa fa-like pull-right">
+						{% if request.user not in users_like %}
+						Like
+						{% else %}
+						Unlike
+						{% endif %}
+					</a>
+					{% endwith %}
+				</div>
+				<div class="col-xs-4">
+					<div class="text-danger">
+						<br/>
+						<br/>
+						{{ image.description|linebreaks }}
+					</div>
+				</div>
+			</div>	
+		</div>
+	</div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-xs-10">
+			<h1 class="text-danger text-left">Dashboard</h1>
+		</div>
+		<div class="col-xs-2">
+			<div class="well">
+				<div class="text-center">
+					<a href="{{ request.user.get_absolute_url }}" class="btn fa fa-user fa-2x"> {{ request.user }}</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<hr/>
+</div>
+<div class="jumbotron">
+	<div class="row">
+		<div class="col-xs-8">
+			{% with total_images_created=request.user.images_created.count %}
+			<p class="text-center text-danger"><br/><br/>Welcome to your dashboard. You have bookmarked {{ total_images_created }} image{{ total_images_created|pluralize }}.</p>
+			{% endwith %}
+		</div>
+		<div class="col-xs-3">
+			<div class="well">
+				<div class="span4 offset4 text-center">
+					<a href="{% url "password_change" %}" class="btn btn-default">change your password</a>
+					<br/>
+					<br/>
+					<a href="{% url "edit" %}" class="btn btn-default">Edit your account</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="container-fluid">
+		<h2 class="text-danger text-left">What's happening</h2>
+		<div id="action-list text-center">
+			{% for action in actions %}
+			{% include "actions/action/detail.html" %}
+			{% endfor %}
+		</div>	
+	</div>
+</div>
+{% endblock %}

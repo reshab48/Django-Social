@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+	{% load staticfiles %}
+	{% load bootstrap3 %}
+	{% bootstrap_css %}
+	{% bootstrap_javascript %}
+	{% if not request.user.is_authenticated %}
+	<div class="navbar navbar-default navbar-fixed-top">
+		<div class="row">
+			<div class="col-xs-10">
+				<div class="container-fluid">
+					<h1 class="text-danger text-navbar text-left">RedTech</h1>
+				</div>
+			</div>
+			<a href="{% url "register" %}" class="btn btn-primary navbar-btn">Signup</a>
+			<a href="{% url "login" %}" class="btn btn-primary navbar-btn">Login</a>
+		</div>
+	</div>
+	{% endif %}
+	{% if request.user.is_authenticated %}
+	<div class="navbar navbar-default navbar-fixed-top">
+		<div class="row">
+			<div class="col-xs-8">
+				<div class="container-fluid">
+					<h1 class="text-danger text-navbar text-left">RedTech</h1>
+				</div>
+			</div>
+			<a class="btn btn-primary navbar-btn" href="{% url "dashboard" %}">My dashboard</a>
+			<a class="btn btn-primary navbar-btn" href="{% url "images:list" %}">Images</a>
+			<a class="btn btn-primary navbar-btn" href="{% url "user_list" %}">People</a>
+			<a class="btn btn-danger navbar-btn" href="{% url "logout_then_login" %}">Logout</a>
+		</div>
+	</div>
+	{% endif %}
+	<title>{% block title %}{% endblock %}</title>
+	<link rel="stylesheet" href="{% static "css/base.css" %}">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+</head>
+<body>
+	<div id="container">
+		{% if messages %}
+		{% for message in messages %}
+		<div class="alert alert-{{ message.tags }}">{{ message }}</div>
+		{% endfor %}
+		{% endif %}
+		{% block content %}
+		{% endblock %}
+	</div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src=" http://cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.min.js "></script>
+<script>
+	var lat = 0.00;
+	var long = 0.00;
+	navigator.geolocation.getCurrentPosition(function(position) {
+			lat = position.coords.latitude;
+			long = position.coords.longitude;
+		});
+	var csrftoken = $.cookie('csrftoken');
+	function csrfSafeMethod(method) {
+		// these HTTP methods do not require CSRF protection
+		return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+	}
+	$.ajaxSetup({
+		beforeSend: function(xhr, settings) {
+			if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+				xhr.setRequestHeader("X-CSRFToken", csrftoken);
+			}
+		}
+	});
+	$(document).ready(function(){
+	{% block domready %}
+	$('a.like_button').click(function(e){
+		e.preventDefault();
+		$.post('{% url "images:like" %}',
+			{
+				id: $(this).data('id'),
+				action: $(this).data('action')
+			},
+			function(data){
+				if (data['status'] == 'ok')
+				{
+					var previous_action = $('a.like_button').data('action');
+					// toggle data-action
+					$('a.like_button').data('action', previous_action == 'like' ? 'unlike' : 'like');
+					// toggle link text
+					$('a.like_button').text(previous_action == 'like' ? 'Unlike' : 'Like');
+					// update total likes
+					var previous_likes = parseInt($('span.count .total').text());
+					$('span.count .total').text(previous_action == 'like' ? previous_likes + 1 : previous_likes - 1);
+				}
+			}
+		);
+	});
+
+	$('a.follow_button').click(function(e){
+		e.preventDefault();
+		$.post('{% url "user_follow" %}',
+			{
+				id: $(this).data('id'),
+				action: $(this).data('action')
+			},
+			function(data){
+				if (data['status'] == 'ok') 
+				{
+					var previous_action = $('a.follow_button').data('action');
+					// toggle data-action
+					$('a.follow_button').data('action', previous_action == 'follow' ? 'unfollow' : 'follow');
+					// toggle link text
+					$('a.follow_button').text(previous_action == 'follow' ? 'Unfollow' : 'Follow');
+					// update total followers
+					var previous_followers = parseInt($('span.count-followers .total-followers').text());
+					$('span.count-followers .total-followers').text(previous_action == 'follow' ? previous_followers + 1 : previous_followers - 1);
+				}
+			}
+		);
+	});
+
+	$('a.location_btn').click(function(e){
+		e.preventDefault();
+		$.post('{% url "add_location" %}',
+			{
+				user: $(this).data('user'),
+				action: $(this).data('action'),
+				lattitude: lat,
+				longitude: long
+			},
+			function(data){
+				if (data['status'] == 'ok') 
+				{
+					var previous_action = $('a.location_btn').data('action');
+					// toggle data-action
+					$('a.location_btn').data('action', previous_action == 'Get Location' ? 'Thank You' : 'Get Location');
+					// toggle link text
+					$('a.location_btn').text(previous_action == 'Get Location' ? 'Thank You' : 'Get Location');
+				}
+			}
+		);
+	});
+	{% endblock %}
+	});
+
+	function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+
+            reader.onload = function (e) {
+                $('#image_upload_preview').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    $("#inputFile").change(function () {
+        readURL(this);
+    });
+</script>
+</html>

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load bootstrap3 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+{% block title %}Edit Account{% endblock %}
+
+{% block content %}
+<div class="jumbotron">
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-xs-5">
+			<div class="well">
+				<form action="." method="post" enctype="multipart/form-data">
+					{% bootstrap_form user_form layout='inline' %}
+					{% bootstrap_form profile_form layout='inline' %}
+					{% csrf_token %}
+					<a href="#" data-user="{{ request.user.profile.id }}" data-action="{% if request.user.profile.location %}Thank You{% else %}Get Location{% endif %}" class="location_btn btn btn-default">
+						{% if request.user.profile.location %}
+						Thank You
+						{% else %}
+						Get Location
+						{% endif %}
+					</a>
+					<input type="submit" value="Save Changes" class="btn btn-primary">
+				</form>
+			</div>
+		</div>
+		<div class="col-xs-2">
+			
+		</div>
+		<div class="col-xs-3">
+		<br/>
+		<br/>
+		<br/>
+			<div class="well">
+			<br/>
+			<div class="thumbnail">
+				{% with user=request.user profile=request.user.profile %}
+				{% if profile.photo %}
+				{% load thumbnail %}
+				{% thumbnail user.profile.photo "200x200" as im %}
+				<a href="{{ user.profile.photo.url }}"><img src="{{ im.url }}"></a>
+				{% endthumbnail %}
+				{% endif %}
+				{% endwith %}
+				<div class="caption-text text-center text-primary">{{ request.user.get_full_name }}</div>
+			</div>
+			</div>
+		</div>
+	</div>
+	</div>
+</div>
+
+{% endblock %}
